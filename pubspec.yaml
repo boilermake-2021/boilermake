@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_animation_progress_bar: ^1.0.6
+  sleek_circular_slider: ^1.2.0+web
 
 
   # The following adds the Cupertino Icons font to your application.
