@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
+import 'package:provider/provider.dart';
 
 class CustomerModel {
   List<AccountModel> accountIds;
@@ -18,6 +19,10 @@ class PurchaseModel {
   String payerId;
   Money amount;
   String description;
+
+  getPurchaseCategories(String id, BuildContext context) async {
+    var id = Provider.of<CustomerModel>(context).id;
+  }
 }
 
 class MerchantModel {

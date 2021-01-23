@@ -1,6 +1,9 @@
+import 'package:boilermake/widgets/pie_chart.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 
 class BudgetCirclePanel extends StatefulWidget {
   BudgetCirclePanel({Key key}) : super(key: key);
@@ -32,12 +35,31 @@ class _BudgetCirclePanelState extends State<BudgetCirclePanel> {
     );
 
     final DateTime now = DateTime.now();
-    final DateFormat formatter = DateFormat('MMMM');
+    final DateFormat formatter = DateFormat('MMMM y');
     final String formatted = formatter.format(now);
-    print(formatted); // something like 2013-04-20
     final monthLabel = Positioned(
-      top: 32,
+      top: 42,
+      left: 0,
       child: Text(formatted),
+    );
+    final pieChartSectionData = new PieChartSectionData(
+      value: 100,
+      badgeWidget: Icon(Icons.airplanemode_active),
+    );
+
+    final pieChartData = new PieChartData(
+      borderData: FlBorderData(show: false),
+      sections: [
+        pieChartSectionData,
+        pieChartSectionData,
+        pieChartSectionData,
+      ],
+    );
+
+    final pieChart = Positioned(
+      left: -50,
+      bottom: -35,
+      child: PieChartSample2(),
     );
 
     return Container(
@@ -53,6 +75,7 @@ class _BudgetCirclePanelState extends State<BudgetCirclePanel> {
               header,
               calendarIcon,
               monthLabel,
+              pieChart,
             ],
           ),
         ),

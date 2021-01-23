@@ -231,9 +231,11 @@ class _StartState extends State<Start> {
 
     return Scaffold(
       appBar: appBar,
-      body: Padding(
-        padding: padding,
-        child: stack,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: padding,
+          child: stack,
+        ),
       ),
       floatingActionButton: callApiButton,
     );
