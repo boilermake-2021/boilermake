@@ -1,5 +1,6 @@
 class BudgetService {
   Map<String, double> spending;
+  Map<String, double> budget;
   double totalSpending;
 
   BudgetService() {
