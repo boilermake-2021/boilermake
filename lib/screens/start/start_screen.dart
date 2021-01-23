@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 class Start extends StatefulWidget {
   const Start({Key key}) : super(key: key);
@@ -18,12 +22,53 @@ class _StartState extends State<Start> {
     });
   }
 
+  void sendPostRequest() async {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json'
+    };
+    http
+        .get(
+            'http://api.nessieisreal.com/merchants?key=03ec43e787ec5b564c2b431c41ab6a9a',
+            //body: json.encode({
+            //  "first_name": "Michael",
+            //  "last_name": "Dressner",
+            //  "address": {
+            //    "street_number": "5717",
+            //    "street_name": "Elm Street",
+            //    "city": "Washington",
+            //    "state": "DC",
+            //    "zip": "20817"
+            //  }
+            //}),
+            headers: headers)
+        .then(
+      (Response r) {
+        Set<String> categories = new Set();
+        List merchants = jsonDecode(r.body);
+        for (var merchant in merchants) {
+          var category = merchant['category'];
+          try {
+            for (var catString in category) {
+              categories.add(catString.toString().toLowerCase());
+            }
+          } catch (Exception) {
+            categories.add(category.toString().toLowerCase());
+          }
+        }
+        for (String category in categories) {
+          print(category);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final appBar = new AppBar();
 
     final callApiButton = new FloatingActionButton(
-      onPressed: () => {},
+      onPressed: () => sendPostRequest(),
       child: Icon(Icons.plus_one),
     );
 
