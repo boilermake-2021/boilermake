@@ -13,6 +13,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     http.post('http://api.nessieisreal.com/customers?key=ff20c7789770dbd08b2b18467a84a68e',
+      headers: {
+        'Content-type' : 'application/json'
+      },
       body: json.encode ({
         "first_name": "Michael",
         "last_name": "Dressner",
