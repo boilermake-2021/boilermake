@@ -1,5 +1,7 @@
 import 'dart:convert';
-
+import 'package:boilermake/models/api/api_models.dart';
+import 'package:boilermake/models/budget_model.dart';
+import 'package:provider/provider.dart';
 import 'package:boilermake/screens/start/start_screen.dart';
 import 'package:boilermake/services/budget_service.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     BudgetService bs = new BudgetService();
@@ -21,7 +22,6 @@ class MyApp extends StatelessWidget {
     //     if (success) print("Successfully deleted " + type);
     //     else print("No " + type + " to delete");
     //   });
-
 
     bs.getCustomerId().then((String id) {
       print("Customer ID: " + id);
@@ -37,7 +37,16 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Start(),
+      home: MultiProvider(
+        providers: [
+          Provider<BudgetModel>(create: (_) => BudgetModel()),
+          Provider<CustomerModel>(create: (_) => CustomerModel()),
+          Provider<AccountModel>(create: (_) => AccountModel()),
+          Provider<PurchaseModel>(create: (_) => PurchaseModel()),
+          Provider<MerchantModel>(create: (_) => MerchantModel()),
+        ],
+        child: Start(),
+      ),
     );
   }
 }

@@ -1,7 +1,13 @@
 import 'dart:convert';
-
+import 'dart:math';
+import 'package:boilermake/models/budget_category_model.dart';
+import 'package:boilermake/models/budget_model.dart';
+import 'package:boilermake/widgets/budget_circle_chart.dart';
+import 'package:boilermake/widgets/budget_display.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:money2/money2.dart';
+import 'package:provider/provider.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -156,8 +162,8 @@ class _StartState extends State<Start> {
     final columnSpacer = SizedBox(height: 10);
 
     final column = Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      //mainAxisSize: MainAxisSize.min,
+      //crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         columnSpacer,
         progressBarRow,
@@ -171,35 +177,55 @@ class _StartState extends State<Start> {
       ],
     );
 
-    final expansionTile = Padding(
-      padding: padding,
-      child: ExpansionTile(
-        title: Text(
-          "Your Budget",
-          style: TextStyle(fontSize: 32),
-        ),
-        children: [
-          column,
-        ],
-        subtitle: Text("What does a subtitle look like?"),
-      ),
-    );
-
     final realSlider = Slider(
       value: _sliderValue * 100,
       max: 100,
       onChanged: (value) => setSliderValue(value / 100),
     );
 
-    final stack = Stack(
-      alignment: Alignment.center,
-      fit: StackFit.expand,
+    Provider.of<BudgetModel>(context).categoryBudgets = {
+      "Food": new BudgetCategoryModel(
+        amountSpent: Money.parse("\$328.00", CommonCurrencies().usd),
+        limit: Money.parse("\$600.00", CommonCurrencies().usd),
+      ),
+      "Another Budget Type": new BudgetCategoryModel(
+        amountSpent: Money.parse("\$257.97", CommonCurrencies().usd),
+        limit: Money.parse("\$600.00", CommonCurrencies().usd),
+      ),
+      "Rent": new BudgetCategoryModel(
+        amountSpent: Money.parse("\$1000.00", CommonCurrencies().usd),
+        limit: Money.parse("\$600.00", CommonCurrencies().usd),
+      ),
+      "Taco Bell": new BudgetCategoryModel(
+        amountSpent: Money.parse("\$300.00", CommonCurrencies().usd),
+        limit: Money.parse("\$600.00", CommonCurrencies().usd),
+      ),
+      "Chicken Nuggets": new BudgetCategoryModel(
+        amountSpent: Money.parse("\$100.00", CommonCurrencies().usd),
+        limit: Money.parse("\$600.00", CommonCurrencies().usd),
+      ),
+    };
+
+    final expansionTile = Padding(
+      padding: padding,
+      child: ExpansionTile(
+        title: Text(
+          "Monthly Budget",
+          style: TextStyle(fontSize: 32),
+        ),
+        children: [
+          BudgetDisplay(),
+        ],
+        subtitle: Text("What does a subtitle look like?"),
+      ),
+    );
+
+    final stack = Column(
+      //alignment: Alignment.center,
+      //fit: StackFit.expand,
       children: [
         expansionTile,
-        Positioned(
-          child: realSlider,
-          bottom: 0,
-        )
+        BudgetCirclePanel(),
       ],
     );
 

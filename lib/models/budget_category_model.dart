@@ -1,7 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
 class BudgetCategoryModel {
-  String name;
+  BudgetCategoryModel({
+    this.limit,
+    this.amountSpent,
+  });
+
   Money limit;
   Money amountSpent;
 }
