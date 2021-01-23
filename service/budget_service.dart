@@ -1,30 +1,42 @@
+import 'package:boilermake/models/budget_category_model.dart';
+import 'package:money2/money2.dart';
+
 class BudgetService {
-  Map<String, double> spending;
-  Map<String, double> budget;
-  double totalSpending;
+  Map<String, BudgetCategoryModel> categoryBudgets;
+  Money totalSpending;
 
   BudgetService() {
-    totalSpending = 0;
+    totalSpending = Money.fromInt(0, CommonCurrencies().usd);
   }
 
-  double getSpendingInCategory(String category) {
-    if (!spending.containsKey(category))
-      return 0.0;
+  Money getSpendingInCategory(String category) {
+    if (!categoryBudgets.containsKey(category))
+      return Money.fromInt(0, CommonCurrencies().usd);
     else
-      return spending[category];
+      return categoryBudgets[category].amountSpent;
   }
 
-  void addSpendingToCategories(double amount, List<String> categories) {
+  void addSpendingToCategories(Money amount, List<String> categories) {
     totalSpending += amount;
 
     for (String category in categories)
       _addSpendingInCategory(amount, category);
   }
 
-  void _addSpendingInCategory(double amount, String category) {
-    if (!spending.containsKey(category))
-      spending[category] = amount;
+  void _addSpendingInCategory(Money amount, String category) {
+    if (!categoryBudgets.containsKey(category)) {
+      categoryBudgets[category] = new BudgetCategoryModel();
+      categoryBudgets[category].amountSpent = amount;
+    }
     else
-      spending[category] += amount;
+      categoryBudgets[category].amountSpent += amount;
+  }
+
+  bool isMaxxed(String category) {
+    if (!categoryBudgets.containsKey(category))
+      return false;
+    else
+      return categoryBudgets[category].amountSpent >=
+          categoryBudgets[category].limit;
   }
 }
