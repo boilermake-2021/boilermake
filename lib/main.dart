@@ -23,13 +23,24 @@ class MyApp extends StatelessWidget {
     //     else print("No " + type + " to delete");
     //   });
 
-    bs.getCustomerId().then((String id) {
-      print("Customer ID: " + id);
-      bs.getAccountIds(id).then((List<String> accountIds) {
-        for (String s in accountIds)
-          print("Account ID: " + s);
-      });
+    // bs.getCustomer().then((CustomerModel customer) {
+    //   print("Customer ID: " + customer.id);
+    //   bs.getAccountIds(customer.id).then((List<String> accountIds) {
+    //     for (String accountId in accountIds) {
+    //       print("Account ID: " + accountId);
+    //       bs.getPurchases(accountId).then((List<PurchaseModel> purchases) {
+    //         for (PurchaseModel purchase in purchases)
+    //           print("Purchase: " + purchase.toString());
+    //       });
+    //     }
+    //   });
+    // });
+
+    bs.getCustomerObject().then((CustomerModel customer) {
+      print(customer);
     });
+
+    bs.getMerchant("57cf75cea73e494d8675ec4a");
 
     return MaterialApp(
       title: 'Flutter Demo',
@@ -40,10 +51,10 @@ class MyApp extends StatelessWidget {
       home: MultiProvider(
         providers: [
           Provider<BudgetModel>(create: (_) => BudgetModel()),
-          Provider<CustomerModel>(create: (_) => CustomerModel()),
-          Provider<AccountModel>(create: (_) => AccountModel()),
-          Provider<PurchaseModel>(create: (_) => PurchaseModel()),
-          Provider<MerchantModel>(create: (_) => MerchantModel()),
+          // Provider<CustomerModel>(create: (_) => CustomerModel()),
+          // Provider<AccountModel>(create: (_) => AccountModel()),
+          // Provider<PurchaseModel>(create: (_) => PurchaseModel()),
+          // Provider<MerchantModel>(create: (_) => MerchantModel()),
         ],
         child: Start(),
       ),

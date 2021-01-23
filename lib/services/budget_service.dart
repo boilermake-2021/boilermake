@@ -1,29 +1,44 @@
 import 'dart:convert';
 
+import 'package:boilermake/models/api/api_models.dart';
 import 'package:boilermake/models/budget_model.dart';
 import 'package:boilermake/services/constants.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:money2/money2.dart';
 
 class BudgetService {
-  final String endpoint_url = "http://api.nessieisreal.com";
   BudgetModel budgetModel;
 
   BudgetService() {
     budgetModel = new BudgetModel();
   }
 
-  Future<String> getCustomerId() async {
-    var response = await http
-        .get(endpoint_url + "/customers?key=" + Constants.nessie_api_key);
-    List body = jsonDecode(response.body);
-    return body.first["_id"];
+  Future<CustomerModel> getCustomerObject() async {
+    List<PurchaseModel> purchases = new List<PurchaseModel>();
+    CustomerModel customer = await _getCustomer();
+    List<String> accountIds = await _getAccountIds(customer.id);
+    for (String accountId in accountIds)
+      purchases.addAll(await _getPurchases(accountId));
+
+    customer.purchases = purchases;
+
+    return customer;
   }
 
-  Future<List<String>> getAccountIds(String custId) async {
+  Future<CustomerModel> _getCustomer() async {
+    var response = await http
+        .get(Constants.nessie_endpoint_url + "/customers?key=" + Constants.nessie_api_key);
+    List body = jsonDecode(response.body);
+    String id = body.first["_id"];
+    return CustomerModel(id);
+  }
+
+  Future<List<String>> _getAccountIds(String custId) async {
     List<String> result = new List();
 
-    var response = await http.get(endpoint_url + "/accounts?key="
+    var response = await http.get(Constants.nessie_endpoint_url + "/accounts?key="
         + Constants.nessie_api_key);
     List body = jsonDecode(response.body);
 
@@ -34,18 +49,41 @@ class BudgetService {
     return result;
   }
 
-  Future<List<String>> getMerchantIds() async {
-    List<String> result = new List();
+  Future<List<PurchaseModel>> _getPurchases(String accountId) async {
+    List<PurchaseModel> purchases = new List();
 
-    var response = await http.get(endpoint_url + "/merchants?key="
-        + Constants.nessie_api_key);
+    var response = await http.get(Constants.nessie_endpoint_url + "/accounts/" +
+      accountId + "/purchases?key=" + Constants.nessie_api_key);
     List body = jsonDecode(response.body);
 
-    for (Map merchant in body) {
-      result.add(merchant["_id"]);
+    for (Map purchase in body) {
+      String id = purchase["_id"];
+      String merchantId = purchase["merchant_id"];
+      Money amount = Money.parse("\$" + purchase["amount"].toString(),
+          CommonCurrencies().usd);
+      PurchaseModel pm = new PurchaseModel(id, merchantId, amount);
+      purchases.add(pm);
     }
 
-    return result;
+    return purchases;
+  }
+
+  Future<MerchantModel> getMerchant(String id) async {
+    MerchantModel merchant = new MerchantModel(id);
+
+    var response = await http.get(Constants.nessie_endpoint_url +
+        "/merchants/" + id + "?key=" + Constants.nessie_api_key);
+    Map body = jsonDecode(response.body);
+
+    merchant.setName(body["name"]);
+
+    if (body.containsKey("category")) {
+      List categories = body["category"];
+      for (dynamic category in categories)
+        merchant.addCategory(category.toString());
+    }
+
+    return merchant;
   }
 
   // Future<bool> deleteAllData(String type) async {
