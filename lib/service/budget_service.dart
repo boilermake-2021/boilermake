@@ -27,8 +27,7 @@ class BudgetService {
     if (!categoryBudgets.containsKey(category)) {
       categoryBudgets[category] = new BudgetCategoryModel();
       categoryBudgets[category].amountSpent = amount;
-    }
-    else
+    } else
       categoryBudgets[category].amountSpent += amount;
   }
 
