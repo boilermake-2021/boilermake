@@ -24,7 +24,11 @@ class MyApp extends StatelessWidget {
 
 
     bs.getCustomerId().then((String id) {
-      print(id);
+      print("Customer ID: " + id);
+      bs.getAccountIds(id).then((List<String> accountIds) {
+        for (String s in accountIds)
+          print("Account ID: " + s);
+      });
     });
 
     return MaterialApp(

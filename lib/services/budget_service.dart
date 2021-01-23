@@ -20,6 +20,34 @@ class BudgetService {
     return body.first["_id"];
   }
 
+  Future<List<String>> getAccountIds(String custId) async {
+    List<String> result = new List();
+
+    var response = await http.get(endpoint_url + "/accounts?key="
+        + Constants.nessie_api_key);
+    List body = jsonDecode(response.body);
+
+    for (Map account in body) {
+      result.add(account["_id"]);
+    }
+
+    return result;
+  }
+
+  Future<List<String>> getMerchantIds() async {
+    List<String> result = new List();
+
+    var response = await http.get(endpoint_url + "/merchants?key="
+        + Constants.nessie_api_key);
+    List body = jsonDecode(response.body);
+
+    for (Map merchant in body) {
+      result.add(merchant["_id"]);
+    }
+
+    return result;
+  }
+
   // Future<bool> deleteAllData(String type) async {
   //   var response = await http.delete(endpoint_url + "/data?key="
   //     + Constants.nessie_api_key + "&type=" + type);
