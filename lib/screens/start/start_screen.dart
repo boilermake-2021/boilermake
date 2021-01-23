@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:boilermake/models/budget_category_model.dart';
-import 'package:boilermake/service/budget_service.dart';
+import 'package:boilermake/models/budget_model.dart';
+import 'package:boilermake/widgets/budget_circle_chart.dart';
 import 'package:boilermake/widgets/budget_display.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
+import 'package:provider/provider.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -182,8 +183,7 @@ class _StartState extends State<Start> {
       onChanged: (value) => setSliderValue(value / 100),
     );
 
-    BudgetService service = new BudgetService();
-    service.categoryBudgets = {
+    Provider.of<BudgetModel>(context).categoryBudgets = {
       "Food": new BudgetCategoryModel(
         amountSpent: Money.parse("\$328.00", CommonCurrencies().usd),
         limit: Money.parse("\$600.00", CommonCurrencies().usd),
@@ -214,19 +214,18 @@ class _StartState extends State<Start> {
           style: TextStyle(fontSize: 32),
         ),
         children: [
-          BudgetDisplay(
-            model: service,
-          ),
+          BudgetDisplay(),
         ],
         subtitle: Text("What does a subtitle look like?"),
       ),
     );
 
-    final stack = Stack(
-      alignment: Alignment.center,
-      fit: StackFit.expand,
+    final stack = Column(
+      //alignment: Alignment.center,
+      //fit: StackFit.expand,
       children: [
         expansionTile,
+        BudgetCirclePanel(),
       ],
     );
 

@@ -14,8 +14,8 @@ class BudgetService {
   }
 
   Future<String> getCustomerId() async {
-    var response = await http.get(endpoint_url + "/customers?key="
-        + Constants.nessie_api_key);
+    var response = await http
+        .get(endpoint_url + "/customers?key=" + Constants.nessie_api_key);
     List body = jsonDecode(response.body);
     return body.first["_id"];
   }
@@ -26,6 +26,5 @@ class BudgetService {
   //
   //   return response.statusCode != 404;
   // }
-
 
 }

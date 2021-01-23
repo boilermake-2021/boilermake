@@ -1,21 +1,20 @@
 import 'package:boilermake/models/budget_category_model.dart';
-import 'package:boilermake/service/budget_service.dart';
+import 'package:boilermake/models/budget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
+import 'package:provider/provider.dart';
 
 class BudgetDisplay extends StatefulWidget {
-  final BudgetService model;
-  BudgetDisplay({
-    @required this.model,
-  });
+  BudgetDisplay();
 
   @override
   _BudgetDisplayState createState() => _BudgetDisplayState();
 }
 
 class _BudgetDisplayState extends State<BudgetDisplay> {
-  List<Widget> buildItems() {
-    Map<String, BudgetCategoryModel> categories = widget.model.categoryBudgets;
+  List<Widget> buildItems(BuildContext context) {
+    Map<String, BudgetCategoryModel> categories =
+        Provider.of<BudgetModel>(context).categoryBudgets;
     List<Widget> children = [];
     final spacer = SizedBox(height: 10);
     for (MapEntry<String, BudgetCategoryModel> entry in categories.entries) {
@@ -38,7 +37,7 @@ class _BudgetDisplayState extends State<BudgetDisplay> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: buildItems(),
+      children: buildItems(context),
     );
   }
 }
