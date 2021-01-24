@@ -4,10 +4,8 @@ import 'package:boilermake/models/budget_model.dart';
 import 'package:boilermake/services/budget_service.dart';
 import 'package:boilermake/services/constants.dart';
 import 'package:boilermake/widgets/budget_display.dart';
-import 'package:boilermake/widgets/pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class BudgetScreen extends StatefulWidget {
@@ -98,7 +96,9 @@ class _BudgetScreenState extends State<BudgetScreen> {
         ? Center(child: CircularProgressIndicator())
         : Card(
             child: ListTile(
-              leading: FaIcon(_categoryIcons[categories[index].key]),
+              leading: Icon(
+                _categoryIcons[categories[index].key],
+              ),
               title: Text(
                 categoryName,
                 style: TextStyle(
@@ -111,6 +111,8 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 "$percentStr%",
                 style: TextStyle(
                   color: percentage >= 100.00 ? Colors.red : Colors.green,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
                 ),
               ),
             ),
@@ -126,22 +128,20 @@ class _BudgetScreenState extends State<BudgetScreen> {
         fontSize: 12,
       ),
     );
-    final budgetNumRow = Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "${budgetModel.totalBudget - budgetModel.totalSpending}",
-            style: TextStyle(
-              color: Colors.black,
-            ),
+    final budgetNumRow = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "${budgetModel.totalBudget - budgetModel.totalSpending}",
+          style: TextStyle(
+            color: Colors.black,
           ),
-          Icon(
-            Icons.arrow_drop_down,
-            color: Constants.red,
-          ),
-        ],
-      ),
+        ),
+        Icon(
+          Icons.arrow_drop_down,
+          color: Constants.red,
+        ),
+      ],
     );
     final appBar = new SliverAppBar(
       elevation: 10,

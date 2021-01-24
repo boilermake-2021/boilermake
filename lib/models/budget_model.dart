@@ -1,6 +1,5 @@
 import 'package:boilermake/models/api/api_models.dart';
 import 'package:boilermake/models/budget_category_model.dart';
-import 'package:boilermake/services/budget_service.dart';
 import 'package:money2/money2.dart';
 
 class BudgetModel {

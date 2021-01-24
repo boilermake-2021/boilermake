@@ -3,7 +3,6 @@ import 'package:boilermake/models/budget_category_model.dart';
 import 'package:boilermake/models/budget_model.dart';
 import 'package:boilermake/services/budget_service.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class BudgetDisplay extends StatefulWidget {

@@ -1,9 +1,7 @@
 import 'package:boilermake/widgets/pie_chart.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
 
 class BudgetCirclePanel extends StatefulWidget {
   BudgetCirclePanel({Key key}) : super(key: key);
@@ -41,19 +39,6 @@ class _BudgetCirclePanelState extends State<BudgetCirclePanel> {
       top: 42,
       left: 0,
       child: Text(formatted),
-    );
-    final pieChartSectionData = new PieChartSectionData(
-      value: 100,
-      badgeWidget: Icon(Icons.airplanemode_active),
-    );
-
-    final pieChartData = new PieChartData(
-      borderData: FlBorderData(show: false),
-      sections: [
-        pieChartSectionData,
-        pieChartSectionData,
-        pieChartSectionData,
-      ],
     );
 
     final pieChart = Positioned(

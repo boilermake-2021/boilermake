@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
 class BudgetCategoryModel {

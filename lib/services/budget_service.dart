@@ -1,13 +1,9 @@
 import 'dart:convert';
 
 import 'package:boilermake/models/api/api_models.dart';
-import 'package:boilermake/models/budget_model.dart';
 import 'package:boilermake/services/constants.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:money2/money2.dart';
-import 'package:provider/provider.dart';
 
 class BudgetService {
   Future<CustomerModel> getCustomerObject() async {
@@ -28,9 +24,9 @@ class BudgetService {
   }
 
   Future<String> _getCustomer() async {
-    var response = await http.get(Constants.nessie_endpoint_url +
+    var response = await http.get(Constants.nessieEndpointUrl +
         "/customers?key=" +
-        Constants.nessie_api_key);
+        Constants.nessieApiKey);
     List body = jsonDecode(response.body);
     String id = body.first["_id"];
     print(body);
@@ -40,9 +36,9 @@ class BudgetService {
   Future<List<String>> _getAccountIds(String custId) async {
     List<String> result = new List();
 
-    var response = await http.get(Constants.nessie_endpoint_url +
+    var response = await http.get(Constants.nessieEndpointUrl +
         "/accounts?key=" +
-        Constants.nessie_api_key);
+        Constants.nessieApiKey);
     List body = jsonDecode(response.body);
 
     for (Map account in body) {
@@ -55,11 +51,11 @@ class BudgetService {
   Future<List<PurchaseModel>> _getPurchases(String accountId) async {
     List<PurchaseModel> purchases = new List();
 
-    var response = await http.get(Constants.nessie_endpoint_url +
+    var response = await http.get(Constants.nessieEndpointUrl +
         "/accounts/" +
         accountId +
         "/purchases?key=" +
-        Constants.nessie_api_key);
+        Constants.nessieApiKey);
     List body = jsonDecode(response.body);
 
     for (Map purchase in body) {
@@ -81,11 +77,11 @@ class BudgetService {
   Future<MerchantModel> getCategoriesByMerchantId(String id) async {
     MerchantModel merchant = new MerchantModel(id);
 
-    var response = await http.get(Constants.nessie_endpoint_url +
+    var response = await http.get(Constants.nessieEndpointUrl +
         "/merchants/" +
         id +
         "?key=" +
-        Constants.nessie_api_key);
+        Constants.nessieApiKey);
     Map body = jsonDecode(response.body);
 
     merchant.setName(body["name"]);
