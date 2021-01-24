@@ -1,4 +1,6 @@
+import 'package:boilermake/models/api/api_models.dart';
 import 'package:boilermake/models/budget_category_model.dart';
+import 'package:boilermake/services/budget_service.dart';
 import 'package:money2/money2.dart';
 
 class BudgetModel {
@@ -7,6 +9,23 @@ class BudgetModel {
 
   BudgetModel() {
     totalSpending = Money.fromInt(0, CommonCurrencies().usd);
+    categoryBudgets = new Map<String, BudgetCategoryModel>();
+  }
+
+  Future<void> update(CustomerModel model) async {
+    BudgetModel newModel = new BudgetModel();
+    for (PurchaseModel purchase in model.purchases) {
+      newModel.totalSpending += purchase.amount;
+      if (purchase.categories.first == null) continue;
+      String key = purchase.categories.first.toLowerCase().trim();
+      newModel.categoryBudgets.putIfAbsent(key, () {
+        return new BudgetCategoryModel(
+            amountSpent: purchase.amount,
+            limit: Money.parse("\$400.00", CommonCurrencies().usd));
+      });
+    }
+    categoryBudgets = newModel.categoryBudgets;
+    totalSpending = newModel.totalSpending;
   }
 
   Money getSpendingInCategory(String category) {
@@ -27,8 +46,7 @@ class BudgetModel {
     if (!categoryBudgets.containsKey(category)) {
       categoryBudgets[category] = new BudgetCategoryModel();
       categoryBudgets[category].amountSpent = amount;
-    }
-    else
+    } else
       categoryBudgets[category].amountSpent += amount;
   }
 

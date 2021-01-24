@@ -1,5 +1,7 @@
+import 'package:boilermake/models/api/api_models.dart';
 import 'package:boilermake/models/budget_category_model.dart';
 import 'package:boilermake/models/budget_model.dart';
+import 'package:boilermake/services/budget_service.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
@@ -12,32 +14,60 @@ class BudgetDisplay extends StatefulWidget {
 }
 
 class _BudgetDisplayState extends State<BudgetDisplay> {
-  List<Widget> buildItems(BuildContext context) {
-    Map<String, BudgetCategoryModel> categories =
-        Provider.of<BudgetModel>(context).categoryBudgets;
-    List<Widget> children = [];
-    final spacer = SizedBox(height: 10);
-    for (MapEntry<String, BudgetCategoryModel> entry in categories.entries) {
-      final categoryProgress = new Card(
-        child: ListTile(
-          title: Text(entry.key),
-          subtitle: CategoryProgress(
-            name: entry.key,
-            model: entry.value,
-          ),
-          dense: true,
-        ),
-      );
-      children.add(categoryProgress);
+  CustomerModel customerModel;
+  BudgetModel budgetModel;
+  bool loading;
+
+  void updateCustomerPurchases() async {
+    loading = true;
+    BudgetService service = new BudgetService();
+    CustomerModel model = await service.getCustomerObject();
+
+    if (mounted) {
+      budgetModel.update(model);
+      customerModel.update(model);
+      setState(() {
+        loading = false;
+        print('No longer loading');
+      });
     }
-    return children;
+    loading = false;
+    print('Finished updating customer purchases');
+  }
+
+  Widget _buildItem(int index) {
+    PurchaseModel purchaseModel = customerModel.purchases[index];
+
+    return loading == true
+        ? Center(child: CircularProgressIndicator())
+        : Card(
+            child: ListTile(
+              title: Text(purchaseModel.categories.first),
+              subtitle: CategoryProgress(
+                name: purchaseModel.categories.first,
+                model:
+                    budgetModel.categoryBudgets[purchaseModel.categories.first],
+              ),
+              dense: true,
+            ),
+          );
+  }
+
+  @override
+  void initState() {
+    customerModel = Provider.of<CustomerModel>(context, listen: false);
+    budgetModel = Provider.of<BudgetModel>(context, listen: false);
+    updateCustomerPurchases();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: buildItems(context),
+    return ListView.builder(
+      itemCount: budgetModel.categoryBudgets.length,
+      itemBuilder: (context, index) => _buildItem(index),
+      shrinkWrap: true,
+      physics: BouncingScrollPhysics(),
     );
   }
 }

@@ -7,39 +7,42 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:money2/money2.dart';
+import 'package:provider/provider.dart';
 
 class BudgetService {
-  BudgetModel budgetModel;
-
-  BudgetService() {
-    budgetModel = new BudgetModel();
-  }
-
   Future<CustomerModel> getCustomerObject() async {
+    CustomerModel customer = new CustomerModel();
     List<PurchaseModel> purchases = new List<PurchaseModel>();
-    CustomerModel customer = await _getCustomer();
+
+    String customerId = await _getCustomer();
+    customer.id = customerId;
+
     List<String> accountIds = await _getAccountIds(customer.id);
-    for (String accountId in accountIds)
-      purchases.addAll(await _getPurchases(accountId));
+    for (String accountId in accountIds) {
+      List<PurchaseModel> newPurchases = await _getPurchases(accountId);
+      purchases += newPurchases;
+    }
 
     customer.purchases = purchases;
-
     return customer;
   }
 
-  Future<CustomerModel> _getCustomer() async {
-    var response = await http
-        .get(Constants.nessie_endpoint_url + "/customers?key=" + Constants.nessie_api_key);
+  Future<String> _getCustomer() async {
+    var response = await http.get(Constants.nessie_endpoint_url +
+        "/customers?key=" +
+        Constants.nessie_api_key);
     List body = jsonDecode(response.body);
     String id = body.first["_id"];
-    return CustomerModel(id);
+    print(body);
+    return id;
   }
 
   Future<List<String>> _getAccountIds(String custId) async {
     List<String> result = new List();
 
-    var response = await http.get(Constants.nessie_endpoint_url + "/accounts?key="
-        + Constants.nessie_api_key);
+    var response = await http.get(Constants.nessie_endpoint_url +
+        "/accounts?key=" +
+        Constants.nessie_api_key);
     List body = jsonDecode(response.body);
 
     for (Map account in body) {
@@ -52,27 +55,37 @@ class BudgetService {
   Future<List<PurchaseModel>> _getPurchases(String accountId) async {
     List<PurchaseModel> purchases = new List();
 
-    var response = await http.get(Constants.nessie_endpoint_url + "/accounts/" +
-      accountId + "/purchases?key=" + Constants.nessie_api_key);
+    var response = await http.get(Constants.nessie_endpoint_url +
+        "/accounts/" +
+        accountId +
+        "/purchases?key=" +
+        Constants.nessie_api_key);
     List body = jsonDecode(response.body);
 
     for (Map purchase in body) {
+      print(purchase);
       String id = purchase["_id"];
       String merchantId = purchase["merchant_id"];
-      Money amount = Money.parse("\$" + purchase["amount"].toString(),
-          CommonCurrencies().usd);
-      PurchaseModel pm = new PurchaseModel(id, merchantId, amount);
-      purchases.add(pm);
+      double amountStr = double.parse(purchase["amount"].toString());
+      Money amount = Money.from(amountStr, CommonCurrencies().usd);
+      PurchaseModel purchaseModel = new PurchaseModel(id, merchantId, amount);
+      MerchantModel merchantModel =
+          await getCategoriesByMerchantId(purchaseModel.merchantId);
+      purchaseModel.categories = merchantModel.categories;
+      purchases.add(purchaseModel);
     }
 
     return purchases;
   }
 
-  Future<MerchantModel> getMerchant(String id) async {
+  Future<MerchantModel> getCategoriesByMerchantId(String id) async {
     MerchantModel merchant = new MerchantModel(id);
 
     var response = await http.get(Constants.nessie_endpoint_url +
-        "/merchants/" + id + "?key=" + Constants.nessie_api_key);
+        "/merchants/" +
+        id +
+        "?key=" +
+        Constants.nessie_api_key);
     Map body = jsonDecode(response.body);
 
     merchant.setName(body["name"]);
@@ -85,12 +98,4 @@ class BudgetService {
 
     return merchant;
   }
-
-  // Future<bool> deleteAllData(String type) async {
-  //   var response = await http.delete(endpoint_url + "/data?key="
-  //     + Constants.nessie_api_key + "&type=" + type);
-  //
-  //   return response.statusCode != 404;
-  // }
-
 }
