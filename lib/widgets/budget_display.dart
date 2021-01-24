@@ -57,6 +57,7 @@ class _BudgetDisplayState extends State<BudgetDisplay> {
   void initState() {
     customerModel = Provider.of<CustomerModel>(context, listen: false);
     budgetModel = Provider.of<BudgetModel>(context, listen: false);
+
     updateCustomerPurchases();
     super.initState();
   }

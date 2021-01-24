@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:boilermake/models/api/api_models.dart';
 import 'package:boilermake/models/budget_model.dart';
+import 'package:boilermake/screens/budget/budget_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:boilermake/screens/start/start_screen.dart';
 import 'package:boilermake/services/budget_service.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
           Provider<BudgetModel>(create: (_) => BudgetModel()),
           Provider<CustomerModel>(create: (_) => CustomerModel()),
         ],
-        child: Start(),
+        child: BudgetScreen(),
       ),
     );
   }

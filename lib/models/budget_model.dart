@@ -6,10 +6,12 @@ import 'package:money2/money2.dart';
 class BudgetModel {
   Map<String, BudgetCategoryModel> categoryBudgets;
   Money totalSpending;
+  Money totalBudget;
 
   BudgetModel() {
     totalSpending = Money.fromInt(0, CommonCurrencies().usd);
     categoryBudgets = new Map<String, BudgetCategoryModel>();
+    totalBudget = Money.fromString("\$5000.00", CommonCurrencies().usd);
   }
 
   Future<void> update(CustomerModel model) async {
