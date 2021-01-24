@@ -21,8 +21,37 @@ class _BudgetScreenState extends State<BudgetScreen> {
   BudgetModel budgetModel;
   CustomerModel customerModel;
   bool loading;
+  List<MapEntry<String, BudgetCategoryModel>> categories;
+  int _currentIndex = 0;
+  final Map<String, IconData> _categoryIcons = {
+    'furniture_store': FontAwesomeIcons.couch,
+    'tech': FontAwesomeIcons.laptop,
+    'food': FontAwesomeIcons.hamburger,
+    'bar': FontAwesomeIcons.beer,
+    'restaurant': FontAwesomeIcons.wineGlass,
+    'meal_delivery': FontAwesomeIcons.shippingFast,
+    'health': FontAwesomeIcons.hospital,
+    'grocery_or_supermarket': FontAwesomeIcons.store,
+    'shoe_store': FontAwesomeIcons.shoePrints,
+    'pharmacy': FontAwesomeIcons.pills,
+    'car_dealer': FontAwesomeIcons.car,
+    'shopping_mall': FontAwesomeIcons.shoppingBag,
+    'book_store': FontAwesomeIcons.book,
+    'finance': FontAwesomeIcons.bookOpen,
+    'department_store': FontAwesomeIcons.tshirt,
+    'meal_takeaway': FontAwesomeIcons.shippingFast,
+    'store': FontAwesomeIcons.storeAlt,
+    'post_office': FontAwesomeIcons.mailBulk,
+  };
+
+  void updateIndex(int value) {
+    setState(() {
+      _currentIndex = value;
+    });
+  }
 
   void updateCustomerPurchases() async {
+    loading = true;
     BudgetService service = new BudgetService();
     CustomerModel model = await service.getCustomerObject();
     if (mounted) {
@@ -31,6 +60,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
         customerModel.update(model);
       });
     }
+    loading = false;
   }
 
   @override
@@ -43,14 +73,20 @@ class _BudgetScreenState extends State<BudgetScreen> {
     loading = false;
   }
 
-  Widget _buildItem(int index) {
-    List<MapEntry<String, BudgetCategoryModel>> categories =
-        budgetModel.categoryBudgets.entries.toList();
-
-    String categoryName = categories[index].key;
+  String sanitizeCategoryNames(String categoryName) {
     categoryName = categoryName.replaceAll("_", " ");
     categoryName =
         "${categoryName[0].toUpperCase()}${categoryName.substring(1)}";
+    return categoryName;
+  }
+
+  Widget _buildItem(int index) {
+    index -= 1;
+    if (loading) {
+      return CircularProgressIndicator();
+    }
+    categories = budgetModel.categoryBudgets.entries.toList();
+    String categoryName = sanitizeCategoryNames(categories[index].key);
 
     BudgetCategoryModel model = categories[index].value;
     double percentage = 100 *
@@ -62,7 +98,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
         ? Center(child: CircularProgressIndicator())
         : Card(
             child: ListTile(
-              leading: FaIcon(FontAwesomeIcons.hamburger),
+              leading: FaIcon(_categoryIcons[categories[index].key]),
               title: Text(
                 categoryName,
                 style: TextStyle(
@@ -154,10 +190,37 @@ class _BudgetScreenState extends State<BudgetScreen> {
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
+                if (index == 0) {
+                  return Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "Budget Categories",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                }
                 return _buildItem(index);
               },
-              childCount: budgetModel.categoryBudgets.length,
+              childCount: budgetModel.categoryBudgets.length + 1,
             ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (value) => updateIndex(value),
+        selectedFontSize: 0,
+        items: [
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.moneyBill),
+            label: "",
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.solidMoneyBillAlt),
+            label: "",
           ),
         ],
       ),
